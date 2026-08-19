@@ -1,0 +1,104 @@
+# Configuração de gateway: o Collector central que recebe de muitos agentes.
+# Compare com day01/config.yaml, que é o mínimo para funcionar.
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        # Limite de tamanho de mensagem evita um cliente derrubar o gateway.
+        max_recv_msg_size_mib: 16
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # Primeiro da lista: derruba dados antes de a memória estourar.
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 80
+    spike_limit_percentage: 20
+
+  # Remove ou mascara dado sensível antes de sair do seu perímetro.
+  transform:
+    error_mode: ignore
+    trace_statements:
+      - delete_key(span.attributes, "http.request.header.authorization")
+      - set(span.attributes["user.email"], "[REDACTED]") where span.attributes["user.email"] != nil
+
+  # Último da lista: agrupa em lotes antes de exportar.
+  batch:
+    send_batch_size: 8192
+    send_batch_max_size: 10000
+    timeout: 5s
+
+exporters:
+  otlphttp:
+    endpoint: ${env:BACKEND_ENDPOINT}
+    headers:
+      # configopaque impede o valor de aparecer em log e em dump de config.
+      authorization: ${env:BACKEND_TOKEN}
+    tls:
+      insecure: false
+    timeout: 30s
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 10000
+      # Fila persistente: sobrevive a restart do processo. Depende da
+      # extension de storage declarada abaixo.
+      storage: file_storage/queue
+
+extensions:
+  # Sonda de liveness e readiness para Kubernetes.
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+  # Diagnóstico ao vivo: /debug/pipelinez, /debug/tracez, /debug/servicez.
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+  # Profiling em produção. Só exponha em rede interna.
+  pprof:
+    endpoint: 127.0.0.1:1777
+
+  # Onde a fila persistente guarda os dados.
+  file_storage/queue:
+    directory: /var/lib/otelcol/queue
+    create_directory: true
+    timeout: 10s
+
+service:
+  extensions: [health_check, zpages, pprof, file_storage/queue]
+
+  # Telemetria do próprio Collector. É por aqui que você monitora o gateway.
+  telemetry:
+    logs:
+      level: info
+      encoding: json
+    metrics:
+      level: detailed
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: 0.0.0.0
+                port: 8888
+
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, transform, batch]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp]

@@ -1,0 +1,13 @@
+// go.work liga módulos locais sem precisar de replace em cada go.mod.
+// Ele vale apenas para comandos rodados a partir deste diretório, então não
+// atrapalha quem compila os módulos individualmente.
+//
+// No contrib o equivalente é o make crosslink, que insere as diretivas replace
+// nos go.mod de quem depende de outro módulo do próprio repositório.
+go 1.25.0
+
+use (
+	.
+	../../day07/printexporter
+	../../day09/tagprocessor
+)

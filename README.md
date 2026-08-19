@@ -1,6 +1,6 @@
 # otel-collector-contrib-journey
 
-Um manual de 14 dias para sair do zero e conseguir contribuir com o
+Um manual de 19 dias para sair do zero e conseguir contribuir com o
 OpenTelemetry Collector e com o repositório
 [opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib).
 
@@ -25,19 +25,33 @@ código foi compilado e testado contra o core v1.65.0 e v0.159.0.
 | [12](day12/README.md) | Testes e validações |
 | [13](day13/README.md) | As boas práticas que os mantenedores cobram |
 | [14](day14/README.md) | Do zero ao hero: doando um componente |
+| [15](day15/README.md) | OTTL, a linguagem de transformação do Collector |
+| [16](day16/README.md) | mdatagen: o metadata.yaml que vira código, teste e doc |
+| [17](day17/README.md) | Resiliência e performance: fila, retry, timeout, profiling |
+| [18](day18/README.md) | O dia a dia no monorepo e o seu primeiro PR |
+| [19](day19/README.md) | Operação, troubleshooting e segurança |
 
 ## Como usar
 
-A ordem importa. Os dias 03 e 04 sustentam tudo que vem depois, e os dias 07 a
-11 assumem o vocabulário do dia 06.
+Os dias 01 a 14 são o caminho principal, em ordem: os dias 03 e 04 sustentam
+tudo que vem depois, e os dias 07 a 11 assumem o vocabulário do dia 06.
+
+Os dias 15 a 19 são aprofundamento e podem ser lidos fora de ordem, conforme a
+necessidade:
+
+* 15 quando for mexer em transformação de dados.
+* 16 na primeira vez que criar ou editar um metadata.yaml.
+* 17 quando o componente precisar aguentar backend instável.
+* 18 antes do primeiro PR.
+* 19 quando precisar operar ou depurar um Collector.
 
 Se você já sabe Go bem, pule 03 e 04. Se já conhece o Collector como usuário,
 comece no 02.
 
 ## Pré-requisitos
 
-* Go 1.24 ou mais novo
-* Docker, usado só no dia 01
+* Go 1.25 ou mais novo
+* Docker, usado nos dias 01 e 19
 * curl
 
 ## Rodando os exemplos
@@ -60,6 +74,10 @@ cd day09/tagprocessor  && go test ./...
 cd day10/heartbeatextension && go test ./...
 cd day11/spancountconnector && go test ./...
 cd day12/exemplos && go test ./... && go test -bench=. -benchmem ./...
+cd day15/exemplos && go run ./01-executando && go test ./...
+cd day16/queuewatchreceiver && go test ./...
+cd day17/resilienteexporter && go test -v ./...
+cd day18/exemplos && go run .
 ```
 
 E o dia 05 compila um Collector de verdade com o exporter do dia 07 dentro:
@@ -80,6 +98,9 @@ builder --config=builder-config.yaml
 | 09 | tagprocessor | adiciona atributos no Resource |
 | 10 | heartbeatextension | toca um arquivo periodicamente e expõe um contador |
 | 11 | spancountconnector | conta spans e emite uma métrica |
+| 15 | função OTTL mascarar | mascara o valor de um atributo |
+| 16 | queuewatchreceiver | receiver de scrape com código gerado por mdatagen |
+| 17 | resilienteexporter | exporter com fila, retry e timeout de verdade |
 
 Todos são pequenos de propósito. O objetivo é que cada um caiba na cabeça e
 mostre a particularidade da sua classe, não que sirvam em produção.

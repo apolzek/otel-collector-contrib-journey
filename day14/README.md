@@ -191,6 +191,11 @@ E confira:
 | 12 | testes e validações |
 | 13 | boas práticas dos mantenedores |
 | 14 | doação de componente |
+| 15 | OTTL, a linguagem de transformação |
+| 16 | mdatagen e a telemetria do componente |
+| 17 | resiliência e performance |
+| 18 | o dia a dia no monorepo e o primeiro PR |
+| 19 | operação, troubleshooting e segurança |
 
 ## Links que você vai usar sempre
 
@@ -207,4 +212,4 @@ E confira:
 * Registry do OpenTelemetry:
   https://opentelemetry.io/ecosystem/registry/
 
-Voltar ao [índice](../README.md)
+Próximo: [Day 15, OTTL](../day15/README.md)

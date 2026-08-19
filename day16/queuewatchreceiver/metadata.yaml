@@ -1,0 +1,65 @@
+# A fonte da verdade do componente. Tudo neste arquivo vira código, teste ou
+# documentação gerada pelo mdatagen.
+type: queuewatch
+display_name: Queue Watch Receiver
+description: Receiver de exemplo que reporta a profundidade de filas.
+
+status:
+  class: receiver
+  stability:
+    development: [metrics]
+  distributions: []
+  codeowners:
+    active: [apolzek]
+
+# Atributos do Resource. Viram configuração ligável e desligável pelo usuário.
+resource_attributes:
+  queuewatch.host:
+    enabled: true
+    description: Host de onde as filas foram lidas.
+    type: string
+
+# Atributos das métricas. Declarados uma vez, referenciados por várias métricas.
+attributes:
+  queue.name:
+    description: Nome da fila.
+    type: string
+
+# As métricas emitidas pelo componente.
+metrics:
+  queuewatch.messages.processed:
+    enabled: false
+    description: Total de mensagens processadas desde o início.
+    unit: "{message}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: [queue.name]
+    stability: development
+
+  queuewatch.queue.depth:
+    enabled: true
+    description: Quantidade de mensagens aguardando na fila.
+    unit: "{message}"
+    gauge:
+      value_type: int
+    attributes: [queue.name]
+    stability: development
+
+# Telemetria interna DO COMPONENTE, diferente das métricas que ele emite.
+# É o que aparece como otelcol_* nas métricas do próprio Collector.
+telemetry:
+  metrics:
+    queuewatch_scrape_errors:
+      enabled: true
+      description: Número de falhas ao ler as filas.
+      unit: "{error}"
+      stability: alpha
+      sum:
+        value_type: int
+        monotonic: true
+
+tests:
+  config:
+    collection_interval: 1s
