@@ -1,0 +1,7 @@
+endpoint: http://backend:4318
+timeout: 30s
+headers:
+  # Resolvido em tempo de boot pelo envprovider.
+  x-tenant: ${env:TENANT}
+tls:
+  insecure: true

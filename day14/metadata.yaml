@@ -1,0 +1,22 @@
+# Exemplo mínimo de metadata.yaml para um componente novo no contrib.
+# A fonte da verdade do componente. O mdatagen lê este arquivo e gera o
+# cabeçalho do README, o documentation.md, o internal/metadata e dois arquivos
+# de teste.
+type: meu
+
+status:
+  class: exporter
+  stability:
+    # Componente novo SEMPRE começa em development, e a estabilidade é por sinal.
+    development: [traces, logs]
+  # Só entra em distributions quando chegar em alpha, no último PR da doação.
+  distributions: []
+  codeowners:
+    # No mínimo três, sendo um deles o sponsor (approver ou maintainer).
+    # A recomendação é que não trabalhem todos na mesma empresa.
+    active: [seu-usuario, seu-sponsor, terceira-pessoa]
+
+# Config usada pelos testes gerados de ciclo de vida.
+tests:
+  config:
+    path: stdout

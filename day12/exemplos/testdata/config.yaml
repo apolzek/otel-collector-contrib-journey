@@ -1,0 +1,14 @@
+# Um arquivo por cenário de teste. O padrão do repositório é ter aqui tanto os
+# casos válidos quanto os que devem falhar na validação.
+valido:
+  remove_keys:
+    - http.request.header.authorization
+    - user.email
+  placeholder: "[REDACTED]"
+
+sem_placeholder:
+  remove_keys:
+    - user.email
+
+invalido:
+  remove_keys: []

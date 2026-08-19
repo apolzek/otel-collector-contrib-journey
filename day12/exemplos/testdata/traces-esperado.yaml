@@ -1,0 +1,20 @@
+resourceSpans:
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: auth
+    scopeSpans:
+      - scope:
+          name: github.com/exemplo/instrumentacao
+        spans:
+          - attributes:
+              - key: user.email
+                value:
+                  stringValue: '[REDACTED]'
+              - key: http.method
+                value:
+                  stringValue: POST
+            kind: 2
+            name: POST /login
+            status: {}

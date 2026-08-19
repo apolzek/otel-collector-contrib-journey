@@ -1,0 +1,30 @@
+# Receita da distribuição. O OCB lê este arquivo, gera um projeto Go em
+# output_path e compila.
+dist:
+  name: meu-otelcol
+  description: Distribuição mínima montada no day05
+  output_path: ./_build
+  # Versão dos módulos do core. Manter todos na mesma release evita
+  # conflito de versão na compilação.
+  otelcol_version: 0.159.0
+
+receivers:
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.159.0
+
+processors:
+  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.159.0
+  - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.159.0
+
+exporters:
+  - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.159.0
+  # Componente local, ainda não publicado. O replace lá embaixo aponta o
+  # caminho no disco.
+  - gomod: github.com/apolzek/otel-collector-contrib-journey/day07/printexporter v0.0.0
+
+extensions: []
+
+connectors: []
+
+# Sem isto o Go tentaria baixar o printexporter do proxy de módulos.
+replaces:
+  - github.com/apolzek/otel-collector-contrib-journey/day07/printexporter => ../../day07/printexporter
